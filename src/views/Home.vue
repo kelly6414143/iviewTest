@@ -4,7 +4,13 @@
     <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <Layout :style="{minHeight: '100vh'}">
             <Sider v-model="isCollapsed">
-                <Menu :active-name="activeName" theme="dark" width="auto" :open-names="['/'+activeName.split('/')[1]]">
+                <Menu 
+                :active-name="activeName" 
+                theme="dark" width="auto" 
+                :open-names="['/'+activeName.split('/')[1]]"
+                @on-open-change="openMenu"
+                accordion
+                >
                   <Fragment :key="items.path" v-for="(items) in menu">
                     <!-- <router-link v-if="!items.children" :to={name:items.name}> -->
                       <MenuItem v-if="!items.children" :name="items.path" :to={name:items.name} >
@@ -82,6 +88,13 @@ export default {
     },
     activeName(){
       return this.$route.fullPath
+    }
+  },
+  methods:{
+    openMenu(e){
+      let selectedMenu = this.menu.find(x=>x.path === e[0])
+      this.$router.push(selectedMenu.path + (selectedMenu.children[0].path?selectedMenu.children[0].path:"/"))
+      
     }
   }
 }
