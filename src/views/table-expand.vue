@@ -5,7 +5,7 @@
 </style>
 <template>
     <div>
-        <Table :show-header="false" :data="data" :columns="columns"></Table>
+        <Table :data="data" :columns="columns"></Table>
         <!-- <Row class="expand-row">
             <i-col span="8">
                 <span class="expand-key">Job: </span>
@@ -41,31 +41,75 @@
         data(){
             return{
                 columns: [
+                    // {
+                    //     title: 'Name',
+                    //     key: 'name'
+                    // },
+                    // {
+                    //     title: 'Age',
+                    //     key: 'age'
+                    // },
+                    // {
+                    //     title: 'Address',
+                    //     key: 'address'
+                    // }
                     {
-                        title: 'Name',
-                        key: 'name'
+                        title: '',
+                        align: 'center',
+                        children: [
+                            {
+                                title: 'Name',
+                                key: 'name'
+                            },
+                            {
+                                title: 'Age',
+                                key: 'age'
+                            },
+                            {
+                                title: 'Address',
+                                key: 'address'
+                            }
+                        ]
                     },
-                    {
-                        title: 'Age',
-                        key: 'age'
-                    },
-                    {
-                        title: 'Address',
-                        key: 'address'
-                    }
                 ],
             }
         },
         props: {
-            row: Object
+            row: Object,
+            column: Object
         },
         computed:{
+            // titleName(){
+            //     return 'title'
+            // },
             data(){
-                return this.row.else
+                if(this.column.key === 'name'){
+                // this.data.sort()
+                    return this.row.else
+                }else if(this.column.key === "age"){
+                    return this.row.elsetwo
+                }
+                // return this.row.else
+            }
+        },
+        watch:{
+            column(){
+                this.changTitleName()
             }
         },
         created(){
-            console.log(this.row)
+            // console.log(this.column[0])
+            this.changTitleName()
+           
+        },
+        methods:{
+            changTitleName(){
+                if(this.column.key === 'name'){
+                this.columns[0].title = 'name資訊'
+                }else if(this.column.key === "age"){
+                    this.columns[0].title = 'age來源'
+                }
+            }
         }
     };
 </script>
@@ -109,5 +153,9 @@ z-index: 9;
 /deep/ .ivu-table-cell:hover .ivu-icon-ios-arrow-forward{
 color:#1d7cd0;
 border-color:#1d7cd0;
+}
+
+/deep/ .ivu-table-header tr:nth-child(2){
+    display: none;
 }
 </style>
