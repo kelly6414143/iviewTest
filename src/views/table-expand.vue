@@ -5,7 +5,11 @@
 </style>
 <template>
     <div>
-        <Table :data="data" :columns="columns"></Table>
+        <Table 
+        :data="data" 
+        :columns="columns"
+        @on-row-click="test"
+        ></Table>
         <!-- <Row class="expand-row">
             <i-col span="8">
                 <span class="expand-key">Job: </span>
@@ -37,7 +41,11 @@
     </div>
 </template>
 <script>
+ import Fragment from '../components/Fragment.vue'
     export default {
+        components:{
+          Fragment
+        },
         data(){
             return{
                 columns: [
@@ -68,6 +76,40 @@
                             {
                                 title: 'Address',
                                 key: 'address'
+                            },
+                            {
+                                title: '操作',
+                                render: (h, params) => {
+                                let vm = this
+                                // function clickBtn(){
+                                //     console.log('test')
+                                // }
+                                return(
+                                        <Fragment>
+                                            <Button onClick={e=>{this.detail('edit')}}>編輯</Button>
+                                            <Button>查看</Button>
+                                        </Fragment>
+                                    )
+                                    // return(
+                                    //     <Fragment>
+                                    //         <Button onClick={e=>{this.detail(params.row.id)}}>編輯</Button>
+                                    //         <Button>查看</Button>
+                                    //     </Fragment>
+                                    // )
+                                    // return  h('span',{
+                                    //                 on: {
+                                    //                 //点击时调用子组件this.detail方法，使用$emit触发showDetail事件
+                                    //                     click: () => {
+                                    //                         console.log('333333')
+                                    //                         this.detail(params.row.id);
+                                    //                     }
+                                    //                     },
+                                    //                 style:{
+                                    //                     color:"#2b85e4",
+                                    //                     cursor:"pointer"
+                                    //                 }
+                                    //         },'test');
+                                }
                             }
                         ]
                     },
@@ -83,13 +125,14 @@
             //     return 'title'
             // },
             data(){
+                let treeData
                 if(this.column.key === 'name'){
                 // this.data.sort()
-                    return this.row.else
+                    treeData= this.row.else
                 }else if(this.column.key === "age"){
-                    return this.row.elsetwo
+                    treeData= this.row.elsetwo
                 }
-                // return this.row.else
+                return treeData
             }
         },
         watch:{
@@ -109,6 +152,12 @@
                 }else if(this.column.key === "age"){
                     this.columns[0].title = 'age來源'
                 }
+            },
+            detail(type){
+               this.$emit('showDetail',type);
+            },
+            test(){
+                // console.log('testest')
             }
         }
     };
@@ -136,11 +185,11 @@
     border: 0px;
 }
 
-/deep/ td.expandBox .ivu-table-cell{
+/* /deep/ td.expandBox .ivu-table-cell{
 position: relative;
-}
+} */
 
-/deep/ .ivu-table-cell::after{
+/* /deep/ .ivu-table-cell::after{
 content: '';
 position: absolute;
 top: 0;
@@ -148,7 +197,7 @@ left:0;
 height: 100%;
 width:100%;
 z-index: 9;
-}
+} */
 
 /deep/ .ivu-table-cell:hover .ivu-icon-ios-arrow-forward{
 color:#1d7cd0;
