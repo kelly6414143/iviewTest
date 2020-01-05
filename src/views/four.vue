@@ -5,6 +5,8 @@
       :data="data9"
       :row-class-name="getRowClass"
       ></Table>
+      <Button @click="showModel">編輯</Button>
+      <div>{{ treeData}}</div>
       <Modal
         v-model="modal1"
         title="Common Modal dialog box title"
@@ -16,8 +18,11 @@
           placeholder="Enter something..."
           @on-enter="searchTree"
           clearable
-          style="width: auto" />
-        <Tree :data="data1" show-checkbox></Tree>
+          @on-clear="initData" />
+        <Tree 
+        :data="dataSearch" 
+        show-checkbox
+        @on-check-change="selectedNode"></Tree>
     </Modal>
     </div>
     
@@ -31,35 +36,58 @@
         },
         data () {
             return {
+              treeData:['leaf 2-2222'],
+              checkedNode:[],
+              dataCopy:[],
+              dataSearch:[],
               modal1:false,
               selectedColumn:'',
               value14:'',
+              arr:[],
               data1: [
                     {
                         title: 'parent 1',
                         expand: true,
+                        checked: false,
                         children: [
                             {
                                 title: 'parent 1-1',
                                 expand: true,
+                                checked: false,
                                 children: [
                                     {
-                                        title: 'leaf 1-1-1'
+                                        title: 'leaf 1-1-1',
+                                        expand: true,
+                                        checked: false,
+                                        children: [
+                                          {
+                                              title: 'leaf 2-2222',
+                                              checked: false,
+                                          },
+                                          {
+                                              title: 'leaf 1-2-1-1',
+                                              checked: false,
+                                          }
+                                      ]
                                     },
-                                    {
-                                        title: 'leaf 1-1-2'
-                                    }
+                                    // {
+                                    //     title: 'leaf 1-1-2',
+                                    //     checked: false,
+                                    // }
                                 ]
                             },
                             {
                                 title: 'parent 1-2',
                                 expand: true,
+                                checked: false,
                                 children: [
                                     {
-                                        title: 'leaf 1-2-1'
+                                        title: 'leaf 1-2-1',
+                                        checked: false,
                                     },
                                     {
-                                        title: 'leaf 1-2-1'
+                                        title: 'leaf 1-2-2',
+                                        checked: false,
                                     }
                                 ]
                             }
@@ -82,7 +110,7 @@
                                   //监听子组件showDetail事件
                                     showDetail:value => {
                                     //确保dom更新完成
-                                    console.log(value)
+                                    // console.log(value)
                                     this.modal1=true
                                       // this.$nextTick(() => {
                                       //   this.toDetail(value[0]);
@@ -409,21 +437,61 @@
             }
         },
         created(){
-          this.$api.name
-          .getList()
-          .then(res => {
-            console.log(res)
-            // this.accountList = res.data;
-          })
-          .catch(err => {
-            console.log(err);
-          });
+          // this.dataSearch = JSON.parse(JSON.stringify(this.data1))
+          // this.dataCopy = JSON.parse(JSON.stringify(this.data1))
+          // this.structureTree(this.dataCopy)
+          // console.log(this.data1)
+          // this.$api.name
+          // .getList()
+          // .then(res => {
+          //   console.log(res)
+          //   // this.accountList = res.data;
+          // })
+          // .catch(err => {
+          //   console.log(err);
+          // });
           // console.log(this.$api.name.getList())
         },
         computed:{
           
         },
+        watch:{
+          value14(){
+            if(!this.value14){
+              // console.log(this.filterSelectedNode(this.dataCopy))
+              this.initTreeData()
+              // this.filterSelectedNode(this.dataCopy)
+            }
+          }
+        },
         methods:{
+          initTreeData(){
+            this.dataSearch = JSON.parse(JSON.stringify(this.data1))
+            this.dataCopy = JSON.parse(JSON.stringify(this.data1))
+            this.structureTree(this.dataCopy)
+            this.filterSelectedNode(this.dataCopy)
+          },
+          resetSeletedTreeNode(data){
+            for(let i=0; i<=data.length-1;i++){
+              let node = data[i]
+              if(node.children&&node.children.length>0){
+                this.resetSeletedTreeNode(node.children)
+              }else{
+                node.checked = false
+              }
+            }
+          },
+          // recursive(data){
+          //   console.log(data.length)
+          //   for(var i=0; i<=data.length-1;i++){
+          //     let node =data[i]
+          //     if(node.children&&node.children.length>0){
+          //       node.parent = data
+          //       this.recursive(node.children)
+          //     }
+          //   }
+          //   console.log(data)
+          // },
           getRowClass(row) {
             let res = []
             if (!row.else && !row.elsetwo)//即改行没有子元素时，添加row-expand-cover类
@@ -497,13 +565,15 @@
                 }
           },
           ok () {
-                this.$Message.info('Clicked ok');
-            },
-            cancel () {
+            console.log(this.treeData)
+              // this.treeData = this.checkedNode
+              this.$Message.info('Clicked ok');
+          },
+          cancel () {
                 this.$Message.info('Clicked cancel');
-            },
-            clickDropdown(name,row){
-              console.log(row)
+          },
+          clickDropdown(name,row){
+              // console.log(row)
               switch(name){
                 case 'delete':
                   this.$Modal.confirm({
@@ -517,11 +587,18 @@
                 });
                   break
               }
-              console.log(name)
+              // console.log(name)
             },
-            searchTree(){
-              console.log(this.data1)
-            }
+          searchTree(){
+              // console.log('ddddddddddddd')
+
+              // console.log(this.data1)
+              // this.dataCopy = JSON.parse(JSON.stringify(this.data1))
+              // console.log('ddddddddddddd')
+              // this.structureTree('filterSearchNode',this.dataCopy)
+              this.initTreeData()
+              this.filterSearchNode(this.dataSearch)
+          },
       //     expandRow(params){
 			// //判断当前行是否展开，如果未展开，执行以下方法，先展开再请求接口加载到data9中当前data index 后
       //       if(!this.data9[params.index].isDown){
@@ -544,6 +621,191 @@
       //         this.data9.splice(params.index + 1, params.row.totals)
       //       }
       //     }
+      showModel(){
+        this.modal1 = true
+        this.resetSeletedTreeNode(this.data1)
+        this.initTreeData()
+        // console.log(this.data1)
+        // console.log(this.data1,this.treeData)
+        // this.data1.forEach
+      },
+      structureTree(tree){
+          for (let idx in tree){
+            this.constructureNode(tree[idx])
+          } 
+        // else if(type==='filterSearchNode'){
+        //   for (let idx in tree){
+        //     this.filterSearchNode(tree[idx])
+        //   } 
+        // }
+        
+      },
+      constructureNode(node){
+        // console.log(nodes)
+        // nodes.forEach(node=>{
+          // node.parent = nodes
+          // console.log(node)
+          if(node.children&&node.children.length>0){
+            node.children.forEach(childNode=>{
+              childNode.parent = node
+            })
+            this.structureTree(node.children) 
+          }
+        // })
+      },
+      filterSelectedNode(data){
+        console.log(this.dataCopy)
+        // console.log('filterSelectedNode',data)
+         for(var i=0; i<=data.length-1;i++){
+              let node =data[i]
+              if(node.children && node.children.length>0){
+              node.children.forEach(childNode=>{
+                // console.log('filterSelectedNode',childNode)
+                if(childNode.children){
+                  this.filterSelectedNode(childNode.children)
+                }else{
+                  this.treeData.forEach(data=>{
+                    if(childNode.title === data){
+                      console.log('childNode',childNode.title,data)
+                      childNode.checked = true
+                    }
+                  })
+                }
+              })
+            }else{
+              this.treeData.forEach(data=>{
+                if(node.title === data){
+                console.log('node',node)
+                  node.checked = true
+                }
+              })
+          }
+          // console.log('filterSelectedNode',this.dataCopy)
+        }
+        this.dataSearch = Object.assign([],this.dataCopy)
+
+          // console.log(this.arr)
+      },
+      selectedNode(selectedNodes, selectedNode){
+        let vm = this
+
+        function resetTreeNode(data){
+          for(let i=0; i<=data.length-1;i++){
+              let node =data[i]
+              // console.log(node)
+              if(node.children && node.children.length>0){
+                node.children.forEach(childNode=>{
+                  if(childNode.children){
+                    resetTreeNode(childNode.children)
+                  }else{
+                    childNode.checked = false
+                  }
+                })
+              }else{
+                node.checked = false
+            }
+        }
+        }
+
+        function recursive(data){
+          for(let i=0; i<=data.length-1;i++){
+              let node =data[i]
+              // console.log(node)
+              if(node.children && node.children.length>0){
+                node.children.forEach(childNode=>{
+                  if(childNode.children){
+                    recursive(childNode.children)
+                  }else{
+                     let checkedNode = selectedNodes.filter((node)=> !node.children)
+                      // console.log(checkedNode)
+                      checkedNode.forEach(data=>{
+                        // console.log(node,selectedNodes)
+                        if(childNode.title === selectedNode.title){
+                          childNode.checked = true
+                        }
+                      })
+                  }
+                })
+              }else{
+                // node.checked=false
+                let checkedNode = selectedNodes.filter((node)=> !node.children)
+                // console.log(checkedNode)
+                checkedNode.forEach(data=>{
+                  // console.log(node,selectedNodes)
+                  if(node.title === selectedNode.title){
+                    node.checked = true
+                  }
+                })
+                // this.treeData = this.childNode
+                // console.log(node)
+            }
+        }
+        }
+
+        resetTreeNode(this.data1)
+        // console.log(this.data1)
+        recursive(this.data1)
+
+      this.checkedNode = []
+      // console.log(this.treeData)
+      let checkedNode = selectedNodes.filter((node)=> !node.children)
+      checkedNode.forEach((node)=>{
+        this.checkedNode.push(node.title)
+      })
+
+      if(!selectedNode.checked){
+        this.treeData.splice(this.treeData.indexOf(selectedNode.title),1)
+        // this.treeData = [this.treeData,...this.checkedNode].flat()
+        // this.treeData = this.treeData.filter((data,index)=>{
+        //   return this.treeData.indexOf(data) === index
+        // })
+        // console.log(this.treeData)
+      }else{
+        // console.log(this.treeData)
+      }
+      this.treeData = [this.treeData,...this.checkedNode].flat()
+      this.treeData = this.treeData.filter((data,index)=>{
+          return this.treeData.indexOf(data) === index
+        })
+      },
+      filterSearchNode(treeData){
+        // console.log(treeData)
+          if(!this.value14){
+            this.filterSelectedNode(this.dataCopy)
+            return
+          }
+          for(let i=treeData.length-1; i>=0;i--){
+            let node = treeData[i]
+            // console.log(node)
+            if(node.children && node.children.length>0){
+              // console.log(node)
+              this.filterSearchNode(node.children)
+            }else{
+              // console.log(node.title,node.title.indexOf(this.value14))
+              if(node.title.indexOf(this.value14)<0){
+                // console.log(node)
+                  treeData.splice(i,1)
+                }
+            }
+            // console.log(node)
+            if(node.children && node.children.length ===0){
+              // console.log(node,i)
+                treeData.splice(i,1)
+              }
+          }
+
+           if(this.dataCopy[0] && this.dataCopy[0].children && this.dataCopy[0].children.length===0){
+              this.dataCopy = []
+            }
+            // console.log('ccccccccccccc')
+
+        this.dataSearch = Object.assign([],this.dataCopy)
+        
+      },
+      initData(){
+        // console.log(this.data1)
+        this.dataSearch = this.data1
+      }
         }
     }
 </script>
