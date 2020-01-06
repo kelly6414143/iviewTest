@@ -468,7 +468,13 @@
           initTreeData(){
             this.dataSearch = JSON.parse(JSON.stringify(this.data1))
             this.dataCopy = JSON.parse(JSON.stringify(this.data1))
-            this.structureTree(this.dataCopy)
+            // this.structureTree(this.dataCopy)
+            this.commonFun.constructureNode(this.dataCopy,(childNode,node)=>{
+              childNode.parent = node
+              childNode.checked = false
+              childNode.expand = false
+            })
+            console.log(this.dataCopy)
             this.filterSelectedNode(this.dataCopy)
           },
           resetSeletedTreeNode(data){

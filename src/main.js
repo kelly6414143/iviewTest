@@ -9,10 +9,12 @@ import api from './apis/api';
 import './plugins/iview.js'
 import './plugins/googleMap.js'
 // import api from './apis/api'
+import commonFun from './components/CommonFun'
 
 Vue.config.productionTip = false
 
 Vue.prototype.$api = api
+Vue.prototype.commonFun = commonFun
 
 new Vue({
   router,
