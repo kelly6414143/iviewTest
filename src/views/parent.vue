@@ -22,6 +22,10 @@ export default {
       childrendata: ""
     };
   },
+  created(){
+    let auth =['open']
+    localStorage.setItem('auth',auth)
+  },
   methods: {
     toparent(data) {
       this.childrendata = data;

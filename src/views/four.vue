@@ -437,6 +437,7 @@
             }
         },
         created(){
+
           // this.dataSearch = JSON.parse(JSON.stringify(this.data1))
           // this.dataCopy = JSON.parse(JSON.stringify(this.data1))
           // this.structureTree(this.dataCopy)
@@ -451,6 +452,11 @@
           //   console.log(err);
           // });
           // console.log(this.$api.name.getList())
+        },
+        mounted(){
+          // let aaa = this.$store.dispatch('permission','abc')
+          let aaa = this.commonFun.permissionJudge('ccc')
+          console.log(aaa)
         },
         computed:{
           

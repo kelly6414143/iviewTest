@@ -9,5 +9,17 @@ export default{
             this.constructureNode(node.children,callback) 
           }  
         }
+    },
+    permissionJudge(value) {
+      // let list = store.getters.getMenuBtnList;
+      let list = ['aaa','bbb']
+
+      // for (let item of list) {
+        // console.log(item)
+        if (list.indexOf(value)>-1) {
+          return true;
+        }
+      // }
+      return false;
     }
 }
